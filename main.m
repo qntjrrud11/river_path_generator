@@ -1,6 +1,6 @@
 clc,clear,close all
 % img loasd
-img = imread("river_map/river_map_01.jpg");
+img = imread("river_map/river_map_02.jpg");
 % gray scale
 gray_img = rgb2gray(img);
 % gausianblur
@@ -15,7 +15,6 @@ title("gausianblur         canny edge")
 
 %% mask a region of interest
 [img_col,img_row]= size(gray_img);
-mask = zeros(img_col,img_row);
 for i=1:img_row
     for j=1:img_col
         if i>=-(img_row*0.15)/img_col*j + img_row*0.15 && ...
@@ -69,7 +68,7 @@ for k = 1:length(lines)
 end
 title("hough line")
 
-%% drowed line
+%% drowed line(linearization)
 img_center = 0.5*img_row;
 left = [];
 rigth = [];
@@ -82,25 +81,28 @@ for k = 1:length(lines)
             rigth(end+1,:) = xy(i,:);
         end
     end
-    
 end
 figure(1)
 imshow(img), hold on;
-drow_x = 1:img_row;
+left_x = 1:img_row/2;
 
 plot(left(:,1),left(:,2),"or"); hold on;
 [left_poly,s] = polyfit(left(:,1),left(:,2),1);
-left_line = polyval(left_poly,drow_x,s);
-plot(drow_x,left_line,"r","LineWidth",3); hold on;
+left_line = polyval(left_poly,left_x,s);
+plot(left_x,left_line,"r","LineWidth",3); hold on;
 
+rigth_x = img_row/2+1:img_row;
 plot(rigth(:,1),rigth(:,2),"ob"); hold on;
 rigth_poly = polyfit(rigth(:,1),rigth(:,2),1);
-rigth_line = polyval(rigth_poly,drow_x);
-plot(drow_x,rigth_line,"b","LineWidth",3);hold off;
+rigth_line = polyval(rigth_poly,rigth_x);
+plot(rigth_x,rigth_line,"b","LineWidth",3);hold on;
 
+l_1 = ([0,img_col]-left_poly(2))/left_poly(1);
+r_1 = ([0,img_col]-rigth_poly(2))/rigth_poly(1);
+mid_line = 0.5*(r_1+l_1);
+plot(mid_line,[0,img_col],"w","LineWidth",3);hold on;
 
-
-
+  
 
 
 
